@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Howzat – a cricket skin for Video.js v10 | Uzi Solutions</title>
+  <link rel="stylesheet" href="/src/howzat.css">
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <main class="page">
+    <h1>Howzat<span class="dot" aria-hidden="true"></span></h1>
+    <p class="lead">A cricket skin for Video.js v10. The seek bar is the pitch, the playhead is the ball, the clock is the scoreboard.</p>
+
+    <video-player>
+      <media-container class="stage">
+        <mux-video src="https://stream.mux.com/rx2m01ckx14T01p02Ir2wWAoHMx8GBy5sQ6lEPn2pfojeE.m3u8" playsinline crossorigin="anonymous"></mux-video>
+
+        <div class="chip chip-start" aria-hidden="true">FIRST BALL</div>
+        <div class="chip chip-drinks" aria-hidden="true">DRINKS BREAK</div>
+        <div class="chip chip-end" aria-hidden="true">STUMPS!</div>
+
+        <media-buffering-indicator class="rain">
+          <span class="rain-ball" aria-hidden="true"></span>
+          <span class="rain-text">RAIN DELAY</span>
+        </media-buffering-indicator>
+
+        <media-controls>
+          <media-controls-content class="deck">
+            <media-time-slider class="pitch" aria-label="Seek">
+              <media-slider-track class="pitch-track">
+                <media-slider-buffer class="pitch-buffer"></media-slider-buffer>
+                <media-slider-fill class="pitch-fill"></media-slider-fill>
+              </media-slider-track>
+              <media-slider-thumb class="ball"></media-slider-thumb>
+              <media-slider-preview class="peek">
+                <media-slider-thumbnail class="peek-img"></media-slider-thumbnail>
+                <media-slider-value type="pointer" class="peek-time"></media-slider-value>
+              </media-slider-preview>
+            </media-time-slider>
+
+            <media-controls-group class="deck-row" aria-label="Playback controls">
+              <media-seek-button seconds="-10" class="key key-seek">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 11-6 6H4a8 8 0 108-8z"/></svg><b>5</b>
+              </media-seek-button>
+
+              <media-play-button class="key key-play">
+                <svg class="show-paused" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+                <svg class="show-playing" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+                <svg class="show-ended" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 11-6 6H4a8 8 0 108-8z"/></svg>
+                <span class="sr">Play / Pause / Replay</span>
+              </media-play-button>
+
+              <media-seek-button seconds="10" class="key key-seek">
+                <b>5</b><svg viewBox="0 0 24 24" aria-hidden="true" style="transform:scaleX(-1)"><path d="M12 5V2L7 6l5 4V7a6 6 0 11-6 6H4a8 8 0 108-8z"/></svg>
+              </media-seek-button>
+
+              <media-time-group class="led">
+                <media-time type="current"></media-time>
+                <media-time-separator></media-time-separator>
+                <media-time type="duration"></media-time>
+              </media-time-group>
+
+              <span class="space"></span>
+
+              <media-captions-button class="key key-cc"><span aria-hidden="true">CC</span></media-captions-button>
+
+              <span class="settings-wrap">
+                <button type="button" commandfor="settings-menu" class="key key-settings" aria-label="Settings">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.4 13a7.7 7.7 0 000-2l2-1.6-2-3.4-2.4 1a7.6 7.6 0 00-1.7-1L15 3.4h-4l-.4 2.6a7.6 7.6 0 00-1.7 1l-2.4-1-2 3.4L6.6 11a7.7 7.7 0 000 2l-2 1.6 2 3.4 2.4-1a7.6 7.6 0 001.7 1l.4 2.6h4l.4-2.6a7.6 7.6 0 001.7-1l2.4 1 2-3.4zM12 15.5a3.5 3.5 0 110-7 3.5 3.5 0 010 7z"/></svg>
+                </button>
+                <media-menu id="settings-menu" side="top" align="end" class="menu">
+                  <media-menu-content class="menu-panel menu-root">
+          <media-menu-item commandfor="quality-menu" class="menu-item">
+            <span>Quality</span>
+            <span class="menu-value"><span data-part="hint"></span><span aria-hidden="true">›</span></span>
+          </media-menu-item>
+          <media-menu-item commandfor="speed-menu" class="menu-item">
+            <span>Speed</span>
+            <span class="menu-value"><span data-part="hint"></span><span aria-hidden="true">›</span></span>
+          </media-menu-item>
+          <media-menu-item commandfor="captions-menu" class="menu-item">
+            <span>Captions</span>
+            <span class="menu-value"><span data-part="hint"></span><span aria-hidden="true">›</span></span>
+          </media-menu-item>
+                  </media-menu-content>
+        <media-menu-content id="quality-menu" class="menu-panel">
+          <media-menu-item class="menu-back"><span aria-hidden="true">‹</span> Quality</media-menu-item>
+          <media-quality-radio-group class="menu-group">
+            <template>
+              <media-menu-radio-item class="menu-item">
+                <span data-part="label"></span>
+                <span data-part="badge" class="menu-badge"></span>
+                <media-menu-item-indicator force-mount class="menu-indicator">✓</media-menu-item-indicator>
+              </media-menu-radio-item>
+            </template>
+          </media-quality-radio-group>
+        </media-menu-content>
+        <media-menu-content id="speed-menu" class="menu-panel">
+          <media-menu-item class="menu-back"><span aria-hidden="true">‹</span> Speed</media-menu-item>
+          <media-playback-rate-radio-group class="menu-group">
+            <template>
+              <media-menu-radio-item class="menu-item">
+                <span data-part="label"></span>
+                <media-menu-item-indicator force-mount class="menu-indicator">✓</media-menu-item-indicator>
+              </media-menu-radio-item>
+            </template>
+          </media-playback-rate-radio-group>
+        </media-menu-content>
+        <media-menu-content id="captions-menu" class="menu-panel">
+          <media-menu-item class="menu-back"><span aria-hidden="true">‹</span> Captions</media-menu-item>
+          <media-captions-radio-group class="menu-group">
+            <template>
+              <media-menu-radio-item class="menu-item">
+                <span data-part="label"></span>
+                <media-menu-item-indicator force-mount class="menu-indicator">✓</media-menu-item-indicator>
+              </media-menu-radio-item>
+            </template>
+          </media-captions-radio-group>
+        </media-menu-content>
+                </media-menu>
+              </span>
+
+              <media-mute-button class="key">
+                <svg class="show-unmuted" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9z"/><path d="M16 8a5 5 0 010 8M18.5 5.5a9 9 0 010 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <svg class="show-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l5 5V4L7 9z"/><path d="M16 9l5 6M21 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <span class="sr">Mute / Unmute</span>
+              </media-mute-button>
+
+              <media-volume-slider class="vol" aria-label="Volume">
+                <media-slider-track class="vol-track">
+                  <media-slider-fill class="vol-fill"></media-slider-fill>
+                </media-slider-track>
+                <media-slider-thumb class="ball small"></media-slider-thumb>
+              </media-volume-slider>
+
+              <media-fullscreen-button class="key">
+                <svg class="show-not-fs" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg class="show-fs" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="sr">Fullscreen</span>
+              </media-fullscreen-button>
+            </media-controls-group>
+          </media-controls-content>
+        </media-controls>
+
+        <media-hotkey keys="Space" action="togglePaused"></media-hotkey>
+        <media-hotkey keys="k" action="togglePaused"></media-hotkey>
+        <media-hotkey keys="m" action="toggleMuted"></media-hotkey>
+        <media-hotkey keys="f" action="toggleFullscreen"></media-hotkey>
+        <media-hotkey keys="ArrowLeft" action="seekStep" value="-5"></media-hotkey>
+        <media-hotkey keys="ArrowRight" action="seekStep" value="5"></media-hotkey>
+        <media-status-announcer></media-status-announcer>
+
+        <media-error-dialog>
+          <media-dialog-popup class="error">
+            <media-dialog-title></media-dialog-title>
+            <media-dialog-description></media-dialog-description>
+            <media-dialog-close class="key">OK</media-dialog-close>
+          </media-dialog-popup>
+        </media-error-dialog>
+      </media-container>
+    </video-player>
+
+    <div class="clips" role="group" aria-label="Demo clips">
+      <button type="button" class="clip" aria-pressed="true" data-src="https://stream.mux.com/rx2m01ckx14T01p02Ir2wWAoHMx8GBy5sQ6lEPn2pfojeE.m3u8">Your film</button>
+      <button type="button" class="clip" aria-pressed="false" data-src="https://stream.mux.com/BV3YZtogl89mg9VcNBhhnHm02Y34zI1nlMuMQfAbl3dM.m3u8">Big Buck Bunny (bright daylight)</button>
+    </div>
+    <p class="note">Space or K play/pause · F fullscreen · M mute · ← → seek 5s</p>
+    <p class="note small">Demo clip B: Big Buck Bunny © Blender Foundation, CC BY 3.0.</p>
+  </main>
+</body>
+</html>

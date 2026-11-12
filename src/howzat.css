@@ -1,0 +1,828 @@
+:root {
+  --grass: #2d6a35;
+  --grass2: #357a3f;
+  --panel: #0f2a17;
+  --cream: #fff7e6;
+  --cream2: #e9dcc0;
+  --ink: #0f2a17;
+  --pitch: #d8be8a;
+  --worn: #9a6b3a;
+  --ball: #c1121f;
+  --led: #ffb000;
+  --ledbg: #120b05;
+  --focus: #ffd23f;
+}
+
+* {
+  box-sizing: border-box
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--cream);
+  font-family: "Trebuchet MS", system-ui, sans-serif;
+  background: repeating-linear-gradient(90deg, var(--grass) 0 70px, var(--grass2) 70px 140px)
+}
+
+.page {
+  max-width: 940px;
+  margin: 0 auto;
+  padding: 28px 16px
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2.4rem, 8vw, 4rem);
+  letter-spacing: .01em;
+  text-shadow: 0 4px 0 rgb(0 0 0 / .25)
+}
+
+.dot {
+  display: inline-block;
+  width: .45em;
+  height: .45em;
+  margin-left: .12em;
+  border-radius: 50%;
+  background: var(--ball);
+  border: 3px solid var(--cream)
+}
+
+.lead {
+  margin: 6px 0 22px;
+  font-size: 1.05rem
+}
+
+.note {
+  font-size: 14px;
+  margin-top: 18px
+}
+
+video-player {
+  display: block
+}
+
+.stage {
+  position: relative;
+  display: block;
+  aspect-ratio: 16/9;
+  background: #000;
+  border: 4px solid var(--cream);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 0 var(--panel)
+}
+
+.stage mux-video,
+.stage video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain
+}
+
+/* match-state chips */
+.chip {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: var(--ledbg);
+  color: var(--led);
+  border: 3px solid var(--cream);
+  font: 800 15px "Courier New", monospace;
+  letter-spacing: .14em;
+  display: none;
+  pointer-events: none
+}
+
+.stage:has(.key-play:not([data-started])) .chip-start,
+.stage:has(.key-play[data-started][data-paused]:not([data-ended])) .chip-drinks,
+.stage:has(.key-play[data-ended]) .chip-end {
+  display: block
+}
+
+/* rain delay (buffering) */
+.rain {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: none;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  background: rgb(15 42 23 / .72);
+  pointer-events: none
+}
+
+.rain[data-visible] {
+  display: grid
+}
+
+.rain-ball {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--ball);
+  border: 3px solid var(--cream);
+  animation: bounce .7s ease-in-out infinite alternate
+}
+
+.rain-text {
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: var(--ledbg);
+  color: var(--led);
+  border: 3px solid var(--cream);
+  font: 800 15px "Courier New", monospace;
+  letter-spacing: .14em
+}
+
+@keyframes bounce {
+  to {
+    transform: translateY(-22px)
+  }
+}
+
+/* control panel */
+media-controls-content {
+  pointer-events: none
+}
+
+.deck {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  padding: 12px 14px 12px;
+  background: var(--panel);
+  border: 3px solid var(--cream);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: opacity .25s, transform .25s
+}
+
+.deck>* {
+  pointer-events: auto
+}
+
+.deck:not([data-visible]):not(:has(:focus-visible)) {
+  opacity: 0;
+  transform: translateY(12px)
+}
+
+.deck-row {
+  display: flex;
+  align-items: center;
+  gap: 10px
+}
+
+.space {
+  flex: 1
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap
+}
+
+/* the pitch (seek bar) */
+.pitch,
+.vol {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: none
+}
+
+.pitch {
+  height: 34px
+}
+
+.pitch-track {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--pitch);
+  border: 3px solid var(--cream);
+  overflow: hidden
+}
+
+.pitch-track::before,
+.pitch-track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  width: 12px;
+  z-index: 2;
+  background: linear-gradient(90deg, var(--cream) 0 2px, transparent 2px 5px, var(--cream) 5px 7px, transparent 7px 10px, var(--cream) 10px 12px)
+}
+
+.pitch-track::before {
+  left: 4px
+}
+
+.pitch-track::after {
+  right: 4px
+}
+
+.pitch-buffer,
+.pitch-fill,
+.vol-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0
+}
+
+.pitch-buffer {
+  width: var(--media-slider-buffer);
+  background: #ead9b0
+}
+
+.pitch-fill {
+  width: var(--media-slider-fill);
+  background: repeating-linear-gradient(90deg, var(--worn) 0 12px, #8a5c30 12px 16px)
+}
+
+.ball {
+  position: absolute;
+  left: var(--media-slider-fill);
+  width: 28px;
+  height: 28px;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: var(--ball);
+  border: 3px solid var(--cream);
+  box-shadow: 0 3px 0 rgb(0 0 0 / .45);
+  transition: scale .12s;
+  z-index: 3
+}
+
+.ball::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  top: 50%;
+  border-top: 2px dotted var(--cream)
+}
+
+.pitch:hover .ball,
+.pitch:active .ball {
+  scale: 1.15
+}
+
+.ball.small {
+  width: 20px;
+  height: 20px;
+  border-width: 2px
+}
+
+.vol {
+  width: 86px;
+  height: 30px
+}
+
+.vol-track {
+  position: relative;
+  width: 100%;
+  height: 10px;
+  border-radius: 99px;
+  background: var(--pitch);
+  border: 2px solid var(--cream);
+  overflow: hidden
+}
+
+.vol-fill {
+  width: var(--media-slider-fill);
+  background: var(--worn)
+}
+
+/* frame preview on hover */
+.peek {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: clamp(90px, var(--media-slider-pointer), calc(100% - 90px));
+  translate: -50% 0;
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  padding: 6px;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 0 4px 0 rgb(0 0 0 / .4);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 6
+}
+
+.pitch[data-pointing] .peek,
+.pitch[data-interactive]:not([data-pointing]) .peek {
+  opacity: 1
+}
+
+.peek-img {
+  display: block;
+  width: 160px;
+  height: 90px;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: #000
+}
+
+.peek-img[data-hidden] {
+  display: none
+}
+
+.peek-time {
+  padding: 2px 8px;
+  background: var(--ledbg);
+  color: var(--led);
+  border-radius: 5px;
+  font: 700 14px "Courier New", monospace;
+  letter-spacing: .08em
+}
+
+/* keys */
+.key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 46px;
+  height: 46px;
+  padding: 0 10px;
+  flex: none;
+  cursor: pointer;
+  background: var(--cream);
+  color: var(--ink);
+  border: 3px solid var(--cream);
+  border-radius: 12px;
+  box-shadow: 0 4px 0 var(--cream2);
+  font: 800 15px "Courier New", monospace;
+  transition: transform .08s, box-shadow .08s
+}
+
+.key svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor
+}
+
+.key:hover {
+  background: #fff
+}
+
+.key:active {
+  transform: translateY(4px);
+  box-shadow: none
+}
+
+.key-play {
+  width: 62px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--ball);
+  color: #fff;
+  border-color: var(--cream);
+  box-shadow: 0 4px 0 rgb(0 0 0 / .45)
+}
+
+.key-play:hover {
+  background: #d8202f
+}
+
+.key-play svg {
+  width: 26px;
+  height: 26px
+}
+
+.key-rate::after {
+  content: attr(data-rate) "×"
+}
+
+.key-play:not([data-paused]) .show-paused,
+.key-play[data-paused] .show-playing,
+.key-play:not([data-ended]) .show-ended,
+.key-play[data-ended] .show-paused,
+.key-play[data-ended] .show-playing,
+.key[data-muted] .show-unmuted,
+.key:not([data-muted]) .show-muted,
+.key:not([data-fullscreen]) .show-fs,
+.key[data-fullscreen] .show-not-fs {
+  display: none
+}
+
+media-fullscreen-button:not([data-fullscreen]) .show-fs {
+  display: none
+}
+
+media-fullscreen-button[data-fullscreen] .show-not-fs {
+  display: none
+}
+
+/* scoreboard clock */
+.led {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--ledbg);
+  color: var(--led);
+  border: 3px solid var(--cream);
+  border-radius: 8px;
+  font: 700 17px "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .08em;
+  text-shadow: 0 0 6px rgb(255 176 0 / .55)
+}
+
+/* error */
+.error {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  gap: 12px;
+  place-content: center;
+  padding: 24px;
+  text-align: center;
+  background: rgb(15 42 23 / .96);
+  color: var(--cream)
+}
+
+.error:not([data-open]) {
+  display: none
+}
+
+.error .key {
+  justify-self: center;
+  padding: 0 24px
+}
+
+@media (max-width:620px) {
+  .peek-img {
+    width: 120px;
+    height: 68px
+  }
+
+  .deck {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    padding: 8px 10px 10px
+  }
+
+  .vol,
+  .key-rate {
+    display: none
+  }
+
+  .key {
+    min-width: 44px;
+    height: 44px
+  }
+
+  .key-play {
+    width: 56px;
+    height: 50px
+  }
+
+  .led {
+    font-size: 13px;
+    padding: 6px 8px
+  }
+
+  .chip {
+    top: 8px;
+    left: 8px;
+    font-size: 12px;
+    padding: 6px 10px
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  * {
+    transition: none !important;
+    animation: none !important
+  }
+}
+
+/* hidden attribute must win over our display rules (CC hides when no captions) */
+.key[hidden],
+media-captions-button[hidden] {
+  display: none
+}
+
+.key-cc span {
+  font-size: 14px;
+  letter-spacing: .04em
+}
+
+.key-cc[data-active] {
+  background: var(--led);
+  border-color: var(--cream)
+}
+
+.settings-wrap {
+  position: relative;
+  display: inline-flex
+}
+
+/* settings menu */
+.menu {
+  --media-menu-side-offset: 70px;
+  --menu-transition-duration: 200ms;
+  position: relative;
+  box-sizing: border-box;
+  width: var(--media-menu-width);
+  min-width: 200px;
+  max-width: var(--media-menu-available-width, var(--media-popover-available-width, none));
+  height: var(--media-menu-height);
+  max-height: var(--media-menu-available-height, var(--media-popover-available-height, none));
+  padding: 6px;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: var(--cream);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 0 5px 0 rgb(0 0 0 / .45);
+  font: 700 15px "Trebuchet MS", system-ui, sans-serif;
+  transition: width, height, opacity, filter;
+  transition-duration: var(--menu-transition-duration);
+  transition-timing-function: ease-in-out
+}
+
+.menu-panel {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 6px;
+  overflow: auto;
+  overscroll-behavior: none;
+  outline: none;
+  translate: 0 0;
+  transition-property: translate, filter;
+  transition-duration: var(--menu-transition-duration);
+  transition-timing-function: ease-in-out
+}
+
+.menu-panel[data-child-open] {
+  filter: blur(6px);
+  translate: -100% 0
+}
+
+.menu-panel[data-submenu] {
+  z-index: 1;
+  background: var(--cream)
+}
+
+.menu-panel[data-submenu][data-starting-style],
+.menu-panel[data-submenu][data-ending-style] {
+  overflow: hidden;
+  pointer-events: none;
+  filter: blur(6px);
+  translate: 100% 0
+}
+
+.menu-item,
+.menu-back {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 12px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 8px
+}
+
+.menu-item[data-highlighted],
+.menu-back:hover {
+  background: var(--ink);
+  color: var(--cream)
+}
+
+.menu-back {
+  justify-content: flex-start;
+  border-bottom: 2px solid var(--ink);
+  border-radius: 8px 8px 0 0
+}
+
+.menu-item[data-availability="unavailable"] {
+  display: none
+}
+
+.menu-value {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  opacity: .75
+}
+
+.menu-group {
+  display: grid;
+  gap: 2px
+}
+
+.menu-badge {
+  margin-left: auto;
+  opacity: .75
+}
+
+.menu-indicator {
+  opacity: 0
+}
+
+media-menu-radio-item[aria-checked="true"] .menu-indicator {
+  opacity: 1
+}
+
+/* demo clip switch */
+.clips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px
+}
+
+.clip {
+  min-height: 44px;
+  padding: 0 16px;
+  font: 800 14px "Trebuchet MS", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--cream);
+  border: 3px solid var(--cream);
+  border-radius: 999px;
+  cursor: pointer
+}
+
+.clip[aria-pressed="true"] {
+  background: var(--ball);
+  color: #fff
+}
+
+.note.small {
+  font-size: 12px;
+  opacity: .75;
+  margin-top: 6px
+}
+
+/* closed panels must stay hidden */
+.menu-panel[hidden],
+.menu-item[hidden],
+.menu-back[hidden] {
+  display: none
+}
+
+.menu-item,
+.menu-back {
+  min-height: 42px
+}
+
+@media (max-width:620px) {
+  .menu {
+    --media-menu-side-offset: 66px;
+    min-width: 180px
+  }
+
+  .menu-item,
+  .menu-back {
+    min-height: 40px
+  }
+}
+
+/* small players: size by the player itself, not the page */
+.stage {
+  container-type: inline-size;
+  overflow: hidden;
+  overflow: clip
+}
+
+.deck,
+.deck-row {
+  min-width: 0
+}
+
+@container (max-width:560px) {
+
+  .key-seek,
+  .vol {
+    display: none
+  }
+
+  .deck {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    padding: 8px 10px 10px
+  }
+
+  .deck-row {
+    gap: 8px
+  }
+
+  .key {
+    min-width: 44px;
+    height: 44px
+  }
+
+  .key-play {
+    width: 54px;
+    height: 50px
+  }
+
+  .led {
+    font-size: 13px;
+    padding: 6px 8px
+  }
+}
+
+@container (max-width:400px) {
+  .deck-row {
+    gap: 5px
+  }
+
+  .key {
+    min-width: 40px;
+    height: 40px;
+    padding: 0 6px
+  }
+
+  .key-play {
+    width: 48px;
+    height: 46px
+  }
+
+  .led {
+    font-size: 12px;
+    padding: 5px 6px;
+    gap: 4px
+  }
+}
+
+/* screen-reader announcer must not be visible */
+media-status-announcer {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap
+}
+
+@container (max-width:320px) {
+  .deck {
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    padding: 6px 6px 8px
+  }
+
+  .deck-row {
+    gap: 4px;
+    justify-content: space-between
+  }
+
+  .space {
+    display: none
+  }
+
+  .key-play {
+    width: 44px;
+    height: 44px
+  }
+
+  .led media-time[type="duration"],
+  .led media-time-separator {
+    display: none
+  }
+}
